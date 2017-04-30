@@ -27,6 +27,7 @@ import (
 type statusModule string
 
 const (
+	cdyHealthHost = "localhost"
 	cdyHealthPort = 12015
 	cdyHealthPath = "/healthz"
 
@@ -327,6 +328,8 @@ func (c *CaddyController) OnUpdate(ingressCfg ingress.Configuration) ([]byte, er
 		Servers:             ingressCfg.Servers,
 		TCPBackends:         ingressCfg.TCPEndpoints,
 		UDPBackends:         ingressCfg.UDPEndpoints,
+		HealthzHost:         cdyHealthHost,
+		HealthzPort:         cdyHealthPort,
 		HealthzURI:          cdyHealthPath,
 		CustomErrors:        len(cfg.CustomHTTPErrors) > 0,
 		Cfg:                 cfg,
@@ -378,7 +381,7 @@ func (c CaddyController) Name() string {
 
 // Check performs a healthcheck
 func (c CaddyController) Check(_ *http.Request) error {
-	res, err := http.Get(fmt.Sprintf("http://localhost:%v%v", cdyHealthPort, cdyHealthPath))
+	res, err := http.Get(fmt.Sprintf("http://%v%v", cdyHealthHost, cdyHealthPath))
 	if err != nil {
 		return err
 	}
