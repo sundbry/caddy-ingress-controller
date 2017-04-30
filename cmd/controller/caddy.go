@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -368,16 +369,22 @@ func (c *CaddyController) OnUpdate(ingressCfg ingress.Configuration) ([]byte, er
 	}
 }
 
-// --------------------------------------------------------
+// == HealthCheck ==
 
-func (c CaddyController) Test(file string) *exec.Cmd {
-	return exec.Command("echo", file)
-}
-
+// Name returns the HealthCheck name
 func (c CaddyController) Name() string {
 	return "Caddy Controller"
 }
 
+// Check performs a healthcheck
 func (c CaddyController) Check(_ *http.Request) error {
+	res, err := http.Get(fmt.Sprintf("http://localhost:%v%v", cdyHealthPort, cdyHealthPath))
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+	if res.StatusCode != 200 {
+		return fmt.Errorf("ingress controller is not healthy")
+	}
 	return nil
 }
