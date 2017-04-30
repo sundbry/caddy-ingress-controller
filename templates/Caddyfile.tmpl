@@ -1,0 +1,19 @@
+{{ $cfg := .Cfg }}
+{{ $backends := .Backends }}
+{{ $proxyHeaders := .ProxySetHeaders }}
+
+{{/* HealthCheck  */}}
+{{ .HealthzHost }}:{{ .HealthzPort }} {
+  status 200 {{ .HealthzURI }}
+}
+
+{{/* Forward Real IP */}}
+realip {
+  {{ if $cfg.UseProxyProtocol }}
+    from {{ $cfg.ProxyRealIPCIDR }}
+  {{ else }}
+    from 0.0.0.0/0
+  {{ end }}
+}
+
+{{ range $name, $upstream := .Backends }}
