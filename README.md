@@ -46,11 +46,11 @@ You can also add the following annotations for various settings.
 
 # jwt
 
-A JSON Web Token (JWT) is a secure authentication token that stores data.
+A JSON Web Token (JWT) is a secure authentication token that stores data.  Read more about jwt [here](https://jwt.io/).
 
 *WARNING* When jwt is enabled, the private key must be deployed with the ingress controller via. setting the environment variable `JWT_SECRET` (HMAC) or `JWT_PUBLIC_KEY` (RSA).
 
-Read more about the jwt plugin [here](https://github.com/BTBurke/caddy-jwt)
+Read more about the jwt plugin [here](https://github.com/BTBurke/caddy-jwt).
 
 ### ingress.kubernetes.io/jwt
 
