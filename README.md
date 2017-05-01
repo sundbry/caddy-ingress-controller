@@ -80,3 +80,8 @@ By default, setting `ingress.kubernetes.io/jwt` to true will also set
 ```
 ingress.kubernetes.io/jwt-path: "/"
 ```
+
+## Disclaimer
+
+This repository includes software with the following licenses:
+* [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0.txt)
