@@ -18,9 +18,9 @@ Example:
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: nginx-test
+  name: caddy-test
   annotations:
-    kubernetes.io/ingress.class: "nginx"
+    kubernetes.io/ingress.class: "caddy"
 spec:
   rules:
   - host: myhost.example.com
