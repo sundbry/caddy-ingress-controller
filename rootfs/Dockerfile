@@ -19,5 +19,4 @@ VOLUME /root/.caddy
 # This will copy the generated config files to the filesystem.
 COPY . /
 
-ENTRYPOINT ["/usr/bin/caddy"]
-CMD ["--conf", "/etc/Caddyfile", "--log", "stdout"]
+CMD ["/caddy-ingress-controller"]
