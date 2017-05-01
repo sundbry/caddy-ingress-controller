@@ -51,7 +51,7 @@ Automatically generate a valid SSL certificate from Let's Encrypt.
 *WARNING* If you're not using persistent storage, you will _probably_ run into the Let's Encrypt [rate limit](https://letsencrypt.org/docs/rate-limits/).
 
 ```
-ingress.kubernetes.io/tls: true
+ingress.kubernetes.io/tls: "true"
 ```
 
 # jwt
