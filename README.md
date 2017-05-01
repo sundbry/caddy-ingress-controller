@@ -40,7 +40,6 @@ You can also add the following annotations for various settings.
 |------|------|
 | [ingress.kubernetes.io/tls](#tls) | true or false |
 | [ingress.kubernetes.io/jwt](#jwt) | true or false |
-| [ingress.kubernetes.io/jwt-path](#jwt) | string |
 | [ingress.kubernetes.io/jwt-redirect](#jwt) | string |
 | [ingress.kubernetes.io/jwt-allow](#jwt) | string |
 | [ingress.kubernetes.io/jwt-deny](#jwt) | string |
@@ -71,15 +70,7 @@ To enable jwt, set
 ingress.kubernetes.io/jwt: "true"
 ```
 
-### ingress.kubernetes.io/jwt-path
-
-The `jwt-path` is the path on the server that requires a valid JWT.
-
-By default, setting `ingress.kubernetes.io/jwt` to true will also set 
-
-```
-ingress.kubernetes.io/jwt-path: "/"
-```
+This will require all paths and hosts defined by the ingress to require a valid JWT.
 
 ## Disclaimer
 
