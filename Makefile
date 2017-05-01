@@ -1,3 +1,6 @@
+# This file is a derivative of https://github.com/kubernetes/ingress/blob/master/controllers/nginx/Makefile
+# Licensed under the Apache License 2.0
+
 all: push
 
 BUILDTAGS=
