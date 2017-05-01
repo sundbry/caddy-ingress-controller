@@ -38,11 +38,22 @@ You can also add the following annotations for various settings.
 
 | Name | type |
 |------|------|
+| [ingress.kubernetes.io/tls](#tls) | true or false |
 | [ingress.kubernetes.io/jwt](#jwt) | true or false |
 | [ingress.kubernetes.io/jwt-path](#jwt) | string |
 | [ingress.kubernetes.io/jwt-redirect](#jwt) | string |
 | [ingress.kubernetes.io/jwt-allow](#jwt) | string |
 | [ingress.kubernetes.io/jwt-deny](#jwt) | string |
+
+# tls
+
+Automatically generate a valid SSL certificate from Let's Encrypt.
+
+*WARNING* If you're not using persistent storage, you will _probably_ run into the Let's Encrypt [rate limit](https://letsencrypt.org/docs/rate-limits/).
+
+```
+ingress.kubernetes.io/tls: true
+```
 
 # jwt
 
