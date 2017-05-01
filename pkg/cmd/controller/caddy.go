@@ -1,3 +1,7 @@
+/*	This file is a derivative of https://github.com/kubernetes/ingress/blob/master/controllers/nginx/pkg/cmd/controller/nginx.go
+	Licensed under the Apache License.  http://www.apache.org/licenses/LICENSE-2.0
+*/
+
 package main
 
 import (
