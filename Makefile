@@ -3,7 +3,7 @@ all: push
 BUILDTAGS=
 
 # Use the 0.0 tag for testing, it shouldn't clobber any release builds
-RELEASE?=0.9.0-beta.5
+RELEASE?=0.0.1
 PREFIX?=wehco/caddy-ingress-controller
 GOOS?=linux
 
