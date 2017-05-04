@@ -138,7 +138,7 @@ func (c *CaddyController) Start() {
 
 	done := make(chan error, 1)
 	c.cmd = exec.Command(c.binary, "-conf", cfgPath)
-	c.start(c.cmd, done)
+	c.start(done)
 	for {
 		err := <-done
 		if exitError, ok := err.(*exec.ExitError); ok {
