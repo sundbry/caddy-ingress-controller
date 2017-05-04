@@ -91,19 +91,7 @@ var (
 			}
 			return true
 		},
-		"buildLocation":            buildLocation,
-		"buildAuthLocation":        buildAuthLocation,
-		"buildAuthResponseHeaders": buildAuthResponseHeaders,
-		"buildProxyPass":           buildProxyPass,
-		"buildRateLimitZones":      buildRateLimitZones,
-		"buildRateLimit":           buildRateLimit,
-		"isLocationAllowed":        isLocationAllowed,
-		"buildLogFormatUpstream":   buildLogFormatUpstream,
-		"contains":                 strings.Contains,
-		"hasPrefix":                strings.HasPrefix,
-		"hasSuffix":                strings.HasSuffix,
-		"toUpper":                  strings.toUpper,
-		"toLower":                  strings.toLower,
+		"buildLocation": buildLocation,
 	}
 )
 
