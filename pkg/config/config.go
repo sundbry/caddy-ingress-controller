@@ -41,6 +41,6 @@ type TemplateConfig struct {
 	UDPBackends []ingress.L4Service
 	HealthzHost string
 	HealthzPort int
-	HealthzURI  string
+	HealthzPath string
 	Cfg         Configuration
 }

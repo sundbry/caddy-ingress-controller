@@ -2,7 +2,7 @@
 
 {{/* HealthCheck  */}}
 {{ .HealthzHost }}:{{ .HealthzPort }} {
-  status 200 {{ .HealthzURI }}
+  status 200 {{ .HealthzPath }}
 }
 
 {{/* Forward Real IP */}}

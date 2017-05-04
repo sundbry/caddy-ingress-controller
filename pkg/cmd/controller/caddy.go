@@ -282,7 +282,7 @@ func (c *CaddyController) OnUpdate(ingressCfg ingress.Configuration) ([]byte, er
 		UDPBackends: ingressCfg.UDPEndpoints,
 		HealthzHost: cdyHealthHost,
 		HealthzPort: cdyHealthPort,
-		HealthzURI:  cdyHealthPath,
+		HealthzPath: cdyHealthPath,
 		Cfg:         cfg,
 	})
 	if err != nil {
