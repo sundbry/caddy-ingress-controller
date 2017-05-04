@@ -248,7 +248,6 @@ func (c CaddyController) OverrideFlags(flags *pflag.FlagSet) {
 	}
 
 	flags.Set("ingress-class", ic)
-	c.stats = newStatsCollector(wc, ic, c.binary)
 }
 
 func (c CaddyController) DefaultIngressClass() string {
