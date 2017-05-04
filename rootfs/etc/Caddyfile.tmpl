@@ -1,6 +1,4 @@
 {{ $cfg := .Cfg }}
-{{ $backends := .Backends }}
-{{ $proxyHeaders := .ProxySetHeaders }}
 
 {{/* HealthCheck  */}}
 {{ .HealthzHost }}:{{ .HealthzPort }} {
