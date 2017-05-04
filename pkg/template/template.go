@@ -33,10 +33,7 @@ type Template struct {
 // NewTemplate returns a new Template instance or an
 // error if the specified template contains errors
 func NewTemplate(file string, onChange func()) (*Template, error) {
-	tmpl, err := text_template.New("caddy.tmpl").Funcs(funcMap).ParseFiles(file)
-	if err != nil {
-		return nil, err
-	}
+	tmpl := text_template.Must(text_template.New("Caddyfile.tmpl").Funcs(funcMap).ParseFiles(file))
 	fw, err := watch.NewFileWatcher(file, onChange)
 	if err != nil {
 		return nil, err
