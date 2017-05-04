@@ -182,7 +182,7 @@ func (c *CaddyController) start(done chan error) {
 
 // Reload checks if the running configuration file is different
 // from the specified and reload Caddy if required
-func (c CaddyController) Reload(data []byte) ([]byte, bool, err) {
+func (c CaddyController) Reload(data []byte) ([]byte, bool, error) {
 	if !c.isReloadRequired(data) {
 		return []byte("Reload not required"), false, nil
 	}
