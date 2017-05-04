@@ -8,7 +8,7 @@ import (
 
 	"github.com/golang/glog"
 
-	"git.zikes.me/caddy-ingress/config"
+	"git.nwaonline.com/kubernetes/caddy-ingress/pkg/config"
 
 	"k8s.io/ingress/core/pkg/ingress"
 	"k8s.io/ingress/core/pkg/watch"
