@@ -8,8 +8,6 @@ package main
 import (
 	"log"
 
-	"github.com/golang/glog"
-
 	"k8s.io/ingress/core/pkg/ingress/controller"
 )
 
@@ -21,5 +19,4 @@ func main() {
 		ic.Stop()
 	}()
 	ic.Start()
-	glog.Infof("shutting down Ingress controller...")
 }

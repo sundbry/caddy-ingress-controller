@@ -8,9 +8,9 @@ package main
 import (
 	"fmt"
 	"io"
+	"log"
 	"net"
 
-	"github.com/golang/glog"
 	"github.com/paultag/sniff/parser"
 )
 
@@ -45,14 +45,14 @@ func (p *proxy) Handle(conn net.Conn) {
 
 	length, err := conn.Read(data)
 	if err != nil {
-		glog.V(4).Infof("error reading the first 4k of the connection: %s", err)
+		log.Printf("error reading the first 4k of the connection: %s", err)
 		return
 	}
 
 	var proxy *server
 	hostname, err := parser.GetHostname(data[:])
 	if err == nil {
-		glog.V(3).Infof("parsed hostname from TLS Client Hello: %s", hostname)
+		log.Printf("parsed hostname from TLS Client Hello: %s", hostname)
 		proxy = p.Get(hostname)
 		if proxy == nil {
 			return

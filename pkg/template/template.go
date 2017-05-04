@@ -6,11 +6,9 @@ package template
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
+	"log"
 	text_template "text/template"
-
-	"github.com/golang/glog"
 
 	"git.nwaonline.com/kubernetes/caddy-ingress/pkg/config"
 
@@ -64,19 +62,11 @@ func (t *Template) Write(conf config.TemplateConfig) ([]byte, error) {
 
 	defer func() {
 		if t.s < t.tmplBuf.Cap() {
-			glog.V(2).Infof("adjusting template buffer size from %v to %v", t.s, t.tmplBuf.Cap())
+			log.Printf("adjusting template buffer size from %v to %v", t.s, t.tmplBuf.Cap())
 			t.s = t.tmplBuf.Cap()
 			t.tmplBuf = bytes.NewBuffer(make([]byte, 0, t.tmplBuf.Cap()))
 		}
 	}()
-
-	if glog.V(3) {
-		b, err := json.Marshal(conf)
-		if err != nil {
-			glog.Errorf("unexpected error: %v", err)
-		}
-		glog.Infof("Caddy configuration: %v", string(b))
-	}
 
 	err := t.tmpl.Execute(t.tmplBuf, conf)
 	if err != nil && err.Error() != errNoChild {

@@ -5,7 +5,8 @@
 package template
 
 import (
-	"github.com/golang/glog"
+	"log"
+
 	"github.com/mitchellh/mapstructure"
 
 	"git.nwaonline.com/kubernetes/caddy-ingress/pkg/config"
@@ -32,12 +33,12 @@ func ReadConfig(src map[string]string) config.Configuration {
 
 	decoder, err := mapstructure.NewDecoder(config)
 	if err != nil {
-		glog.Warningf("unexpected error merging defaults: %v", err)
+		log.Printf("unexpected error merging defaults: %v", err)
 	}
 
 	err = decoder.Decode(conf)
 	if err != nil {
-		glog.Warningf("unexpected error merging defaults: %v", err)
+		log.Printf("unexpected error merging defaults: %v", err)
 	}
 
 	return to

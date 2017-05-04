@@ -8,13 +8,13 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net"
 	"net/http"
 	"os"
 	"os/exec"
 	"syscall"
 
-	"github.com/golang/glog"
 	"github.com/spf13/pflag"
 
 	"git.nwaonline.com/kubernetes/caddy-ingress/pkg/config"
@@ -51,7 +51,7 @@ func newCaddyController() ingress.Controller {
 
 	h, err := dns.GetSystemNameServers()
 	if err != nil {
-		glog.Warningf("unexpected error reading system nameservers: %v", err)
+		log.Printf("unexpected error reading system nameservers: %v", err)
 	}
 
 	c := &CaddyController{
@@ -63,7 +63,7 @@ func newCaddyController() ingress.Controller {
 
 	listener, err := net.Listen("tcp", ":443")
 	if err != nil {
-		glog.Fatalf("%v", err)
+		log.Fatalf("%v", err)
 	}
 
 	// start goroutine that accepts tcp connections in port 443
@@ -75,11 +75,11 @@ func newCaddyController() ingress.Controller {
 			conn, err = listener.Accept()
 
 			if err != nil {
-				glog.Warningf("unexpected error accepting tcp connection: %v", err)
+				log.Printf("unexpected error accepting tcp connection: %v", err)
 				continue
 			}
 
-			glog.V(3).Infof("remote address %s to local %s", conn.RemoteAddr(), conn.LocalAddr())
+			log.Printf("remote address %s to local %s", conn.RemoteAddr(), conn.LocalAddr())
 			go c.proxy.Handle(conn)
 		}
 	}()
@@ -88,7 +88,7 @@ func newCaddyController() ingress.Controller {
 	onChange = func() {
 		template, err := cdy_template.NewTemplate(tmplPath, onChange)
 		if err != nil {
-			glog.Errorf(`
+			log.Printf(`
 -------------------------------------------------------------------------------
 Error loading new template: %v
 -------------------------------------------------------------------------------
@@ -98,12 +98,12 @@ Error loading new template: %v
 
 		c.t.Close()
 		c.t = template
-		glog.Info("new Caddy template loaded")
+		log.Print("new Caddy template loaded")
 	}
 
 	cdyTpl, err := cdy_template.NewTemplate(tmplPath, onChange)
 	if err != nil {
-		glog.Fatalf("invalid Caddy template: %v", err)
+		log.Fatalf("invalid Caddy template: %v", err)
 	}
 
 	c.t = cdyTpl
@@ -134,7 +134,7 @@ type CaddyController struct {
 }
 
 func (c *CaddyController) Start() {
-	glog.Info("starting Caddy process...")
+	log.Print("starting Caddy process...")
 
 	done := make(chan error, 1)
 	c.cmd = exec.Command(c.binary, "-conf", cfgPath)
@@ -143,7 +143,7 @@ func (c *CaddyController) Start() {
 		err := <-done
 		if exitError, ok := err.(*exec.ExitError); ok {
 			waitStatus := exitError.Sys().(syscall.WaitStatus)
-			glog.Warningf(`
+			log.Printf(`
 -------------------------------------------------------------------------------
 Caddy process died (%v): %v
 -------------------------------------------------------------------------------
@@ -159,7 +159,7 @@ func (c *CaddyController) start(done chan error) {
 	c.cmd.Stdout = os.Stdout
 	c.cmd.Stderr = os.Stderr
 	if err := c.cmd.Start(); err != nil {
-		glog.Fatalf("caddy error: %v", err)
+		log.Fatalf("caddy error: %v", err)
 		done <- err
 		return
 	}
@@ -234,7 +234,7 @@ func (c CaddyController) OverrideFlags(flags *pflag.FlagSet) {
 	}
 
 	if ic != defIngressClass {
-		glog.Warningf("only Ingress with class %v will be processed by this controller", ic)
+		log.Printf("only Ingress with class %v will be processed by this controller", ic)
 	}
 
 	flags.Set("ingress-class", ic)
