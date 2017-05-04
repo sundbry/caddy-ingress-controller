@@ -228,7 +228,6 @@ func (c CaddyController) Info() *ingress.BackendInfo {
 
 func (c CaddyController) OverrideFlags(flags *pflag.FlagSet) {
 	ic, _ := flags.GetString("ingress-class")
-	wc, _ := flags.GetString("watch-namespace")
 
 	if ic == "" {
 		ic = defIngressClass
