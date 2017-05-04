@@ -12,8 +12,6 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"strconv"
-	"strings"
 	"syscall"
 
 	"github.com/golang/glog"
@@ -27,7 +25,6 @@ import (
 	"k8s.io/ingress/core/pkg/ingress"
 	"k8s.io/ingress/core/pkg/ingress/defaults"
 	"k8s.io/ingress/core/pkg/net/dns"
-	"k8s.io/ingress/core/pkg/net/ssl"
 )
 
 const (
@@ -280,55 +277,15 @@ func (c *CaddyController) OnUpdate(ingressCfg ingress.Configuration) ([]byte, er
 	cfg := cdy_template.ReadConfig(c.configmap.Data)
 	cfg.Resolver = c.resolver
 
-	setHeaders := map[string]string{}
-	if cfg.ProxySetHeaders != "" {
-		cfgMap, exists, err := c.storeLister.ConfigMap.GetByKey(cfg.ProxySetHeaders)
-		if err != nil {
-			glog.Warningf("unexpected error reading configmap %v: %v", cfg.ProxySetHeaders, err)
-		}
-		if exists {
-			setHeaders = cfgMap.(*api.ConfigMap).Data
-		}
-	}
-
-	sslDHParam := ""
-	if cfg.SSLDHParam != "" {
-		secretName := cfg.SSLDHParam
-		s, exists, err := c.storeLister.Secret.GetByKey(secretName)
-		if err != nil {
-			glog.Warningf("unexpected error reading secret %v: %v", secretName, err)
-		}
-
-		if exists {
-			secret := s.(*api.Secret)
-			nsSecName := strings.Replace(secretName, "/", "-", -1)
-
-			dh, ok := secret.Data["dhparam.pem"]
-			if ok {
-				pemFileName, err := ssl.AddOrUpdateDHParam(nsSecName, dh)
-				if err != nil {
-					glog.Warningf("unexpected error adding or updating dhparam %v: %v", nsSecName, err)
-				} else {
-					sslDHParam = pemFileName
-				}
-			}
-		}
-	}
-
-	cfg.SSLDHParam = sslDHParam
-
 	content, err := c.t.Write(config.TemplateConfig{
-		ProxySetHeaders:     setHeaders,
-		Backends:            ingressCfg.Backends,
-		PassthroughBackends: ingressCfg.PassthroughBackends,
-		Servers:             ingressCfg.Servers,
-		TCPBackends:         ingressCfg.TCPEndpoints,
-		UDPBackends:         ingressCfg.UDPEndpoints,
-		HealthzHost:         cdyHealthHost,
-		HealthzPort:         cdyHealthPort,
-		HealthzURI:          cdyHealthPath,
-		CustomErrors:        len(cfg.CustomHTTPErrors) > 0,
-		Cfg:                 cfg,
+		Backends:    ingressCfg.Backends,
+		Servers:     ingressCfg.Servers,
+		TCPBackends: ingressCfg.TCPEndpoints,
+		UDPBackends: ingressCfg.UDPEndpoints,
+		HealthzHost: cdyHealthHost,
+		HealthzPort: cdyHealthPort,
+		HealthzURI:  cdyHealthPath,
+		Cfg:         cfg,
 	})
 	if err != nil {
 		return nil, err
@@ -336,36 +293,6 @@ func (c *CaddyController) OnUpdate(ingressCfg ingress.Configuration) ([]byte, er
 
 	// TODO: Validate config template results
 
-	servers := []*server{}
-	for _, pb := range ingressCfg.PassthroughBackends {
-		svc := pb.Service
-		if svc == nil {
-			glog.Warningf("missing service for PassthroughBackends %v", pb.Backend)
-			continue
-		}
-		port, err := strconv.Atoi(pb.Port.String())
-		if err != nil {
-			for _, sp := range svc.Spec.Ports {
-				if sp.Name == pb.Port.String() {
-					port = int(sp.Port)
-					break
-				}
-			}
-		} else {
-			for _, sp := range svc.Spec.Ports {
-				if sp.Port == int32(port) {
-					port = int(sp.Port)
-					break
-				}
-			}
-		}
-
-		servers = append(servers, &server{
-			Hostname: pb.Hostname,
-			IP:       svc.Spec.ClusterIP,
-			Port:     port,
-		})
-	}
 }
 
 // == HealthCheck ==
