@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: default-backend
+  namespace: default
+  labels:
+    name: default-backend
+    app: caddy-ingress-controller
+spec:
+  ports:
+  - port: 80
+    targetPort: 12015
+  selector:
+    app: caddy-ingress-controller
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: caddy-ingress-controller
+  namespace: default
+  labels:
+    app: caddy-ingress-controller
+spec:
+  selector:
+    matchLabels:
+      app: caddy-ingress-controller
+  template:
+    metadata:
+      labels:
+        app: caddy-ingress-controller
+    spec:
+      containers:
+        - name: server
+          image: zikes/caddy-ingress:0.0.1
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 12015
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          args:
+            - /caddy-ingress-controller
+            - --default-backend-service=$(POD_NAMESPACE)/default-backend
