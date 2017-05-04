@@ -35,11 +35,12 @@ func NewDefault() Configuration {
 
 // TemplateConfig contains the configuration to render the file /etc/Caddyfile
 type TemplateConfig struct {
-	Backends      []*ingress.Backend
-	Servers       []*ingress.Server
-	TCPBackends   []ingress.L4Service
-	UDPBackends   []ingress.L4Service
-	HealthzURI    string
-	Cfg           Configuration
-	IsIPV6Enabled bool
+	Backends    []*ingress.Backend
+	Servers     []*ingress.Server
+	TCPBackends []ingress.L4Service
+	UDPBackends []ingress.L4Service
+	HealthzHost string
+	HealthzPort int
+	HealthzURI  string
+	Cfg         Configuration
 }
