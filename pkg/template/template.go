@@ -84,7 +84,7 @@ func (t *Template) Write(conf config.TemplateConfig) ([]byte, error) {
 
 var (
 	funcMap = text_template.FuncMap{
-		"empty": func(input interface{}) {
+		"empty": func(input interface{}) bool {
 			check, ok := input.(string)
 			if ok {
 				return len(check) == 0
