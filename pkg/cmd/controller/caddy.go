@@ -32,8 +32,6 @@ const (
 	cdyHealthHost = "localhost"
 	cdyHealthPort = 12015
 	cdyHealthPath = "/healthz"
-
-	errNoChild = "wait: no child processes"
 )
 
 var (
