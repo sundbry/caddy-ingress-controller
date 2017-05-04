@@ -277,7 +277,7 @@ func (c *CaddyController) OnUpdate(ingressCfg ingress.Configuration) ([]byte, er
 		}
 	}
 
-	cfg = cdy_template.ReadConfig(c.configmap.Data)
+	cfg := cdy_template.ReadConfig(c.configmap.Data)
 	cfg.Resolver = c.resolver
 
 	setHeaders := map[string]string{}
