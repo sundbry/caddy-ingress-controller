@@ -292,6 +292,7 @@ func (c *CaddyController) OnUpdate(ingressCfg ingress.Configuration) ([]byte, er
 
 	// TODO: Validate config template results
 
+	return content, nil
 }
 
 // == HealthCheck ==
