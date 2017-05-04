@@ -19,11 +19,11 @@ import (
 	"github.com/golang/glog"
 	"github.com/spf13/pflag"
 
+	"git.nwaonline.com/kubernetes/caddy-ingress/pkg/config"
 	cdy_template "git.nwaonline.com/kubernetes/caddy-ingress/pkg/template"
 
 	api "k8s.io/client-go/pkg/api/v1"
 
-	"k8s.io/ingress/controllers/nginx/pkg/config"
 	"k8s.io/ingress/core/pkg/ingress"
 	"k8s.io/ingress/core/pkg/ingress/defaults"
 	"k8s.io/ingress/core/pkg/net/dns"
