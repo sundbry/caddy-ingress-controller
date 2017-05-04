@@ -30,14 +30,10 @@ import (
 	"k8s.io/ingress/core/pkg/net/ssl"
 )
 
-type statusModule string
-
 const (
 	cdyHealthHost = "localhost"
 	cdyHealthPort = 12015
 	cdyHealthPath = "/healthz"
-
-	defaultStatusModule statusModule = "default"
 
 	errNoChild = "wait: no child processes"
 )
@@ -134,8 +130,6 @@ type CaddyController struct {
 
 	watchClass string
 	namespace  string
-
-	statusModule statusModule
 
 	proxy *proxy
 
@@ -285,8 +279,6 @@ func (c *CaddyController) OnUpdate(ingressCfg ingress.Configuration) ([]byte, er
 
 	cfg = cdy_template.ReadConfig(c.configmap.Data)
 	cfg.Resolver = c.resolver
-
-	c.setupMonitor(defaultStatusModule)
 
 	setHeaders := map[string]string{}
 	if cfg.ProxySetHeaders != "" {
