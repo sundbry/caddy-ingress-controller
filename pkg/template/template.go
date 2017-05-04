@@ -41,7 +41,7 @@ func NewTemplate(file string, onChange func()) (*Template, error) {
 	}
 
 	return &Template{
-		tmpl:    templ,
+		tmpl:    tmpl,
 		fw:      fw,
 		s:       defBufferSize,
 		tmplBuf: bytes.NewBuffer(make([]byte, 0, defBufferSize)),
