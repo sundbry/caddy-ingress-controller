@@ -7,7 +7,7 @@ BUILDTAGS=
 
 # Use the 0.0 tag for testing, it shouldn't clobber any release builds
 RELEASE?=0.0.1
-PREFIX?=wehco/caddy-ingress-controller
+PREFIX?=docker.nwaonline.com/kubernetes/caddy-ingress/image
 GOOS?=linux
 
 REPO_INFO=$(shell git config --get remote.origin.url)
