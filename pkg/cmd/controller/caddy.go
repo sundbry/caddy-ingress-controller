@@ -133,7 +133,6 @@ type CaddyController struct {
 	watchClass string
 	namespace  string
 
-	stats        *statsCollector
 	statusModule statusModule
 
 	proxy *proxy
