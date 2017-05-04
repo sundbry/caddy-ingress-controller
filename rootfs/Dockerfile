@@ -2,7 +2,7 @@
 FROM alpine:3.5
 MAINTAINER Kevin Minehart <kminehart@wehco.com>
 
-ARG plugins=http.jwt,http.proxyprotocol
+ARG plugins=http.jwt,http.proxyprotocol,http.realip
 
 RUN curl --silent --show-error --fail --location \
       --header "Accept: application/tar+gzip, application/x-gzip, application/octet-stream" -o - \
