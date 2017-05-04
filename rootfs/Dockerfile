@@ -4,6 +4,8 @@ MAINTAINER Kevin Minehart <kminehart@wehco.com>
 
 ARG plugins=http.jwt,http.proxyprotocol,http.realip
 
+RUN apk add --no-cache openssh-client git tar curl
+
 RUN curl --silent --show-error --fail --location \
       --header "Accept: application/tar+gzip, application/x-gzip, application/octet-stream" -o - \
       "https://caddyserver.com/download/linux/amd64?plugins=${plugins}" \
