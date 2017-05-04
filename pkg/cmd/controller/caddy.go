@@ -19,6 +19,7 @@ import (
 
 	"git.nwaonline.com/kubernetes/caddy-ingress/pkg/config"
 	cdy_template "git.nwaonline.com/kubernetes/caddy-ingress/pkg/template"
+	"git.nwaonline.com/kubernetes/caddy-ingress/pkg/version"
 
 	api "k8s.io/client-go/pkg/api/v1"
 
@@ -220,9 +221,9 @@ func (c CaddyController) BackendDefaults() defaults.Backend {
 func (c CaddyController) Info() *ingress.BackendInfo {
 	return &ingress.BackendInfo{
 		Name:       "caddy",
-		Release:    "0.0.1",
-		Build:      "git-00000000",
-		Repository: "git://github.com/zikes/caddy-ingress-controller",
+		Release:    version.RELEASE,
+		Build:      version.COMMIT,
+		Repository: version.REPO,
 	}
 }
 
