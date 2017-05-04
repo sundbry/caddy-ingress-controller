@@ -35,9 +35,9 @@ const (
 )
 
 var (
-	tmplPath        = "/etc/caddy/template/caddy.tmpl"
-	cfgPath         = "/etc/caddy/Caddyfile"
-	binary          = "/usr/sbin/caddy"
+	tmplPath        = "/etc/Caddyfile.tmpl"
+	cfgPath         = "/etc/Caddyfile"
+	binary          = "/usr/bin/caddy"
 	defIngressClass = "caddy"
 )
 
