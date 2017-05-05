@@ -6,6 +6,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -290,6 +291,21 @@ func (c *CaddyController) OnUpdate(ingressCfg ingress.Configuration) ([]byte, er
 	}
 
 	// TODO: Validate config template results
+
+	log.Printf(`
+-----------------------------------------------
+Caddyfile
+-----------------------------------------------
+%v
+`, string(content))
+	b, _ := json.Marshal(ingressCfg)
+	log.Printf(`
+-----------------------------------------------
+Configuration Struct
+-----------------------------------------------
+%v
+
+`, string(b))
 
 	return content, nil
 }
