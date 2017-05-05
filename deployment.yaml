@@ -8,8 +8,8 @@ metadata:
     app: caddy-ingress-controller
 spec:
   ports:
-  - port: 80
-    targetPort: 12015
+    - port: 80
+      targetPort: 12015
   selector:
     app: caddy-ingress-controller
 ---
@@ -21,6 +21,7 @@ metadata:
   labels:
     app: caddy-ingress-controller
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: caddy-ingress-controller
@@ -32,9 +33,22 @@ spec:
       containers:
         - name: server
           image: zikes/caddy-ingress:0.0.1
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 12015
+              scheme: HTTP
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 12015
+              scheme: HTTP
           imagePullPolicy: Always
           ports:
-          - containerPort: 12015
+          - containerPort: 80
+            hostPort: 80
+          - containerPort: 443
+            hostPort: 443
           env:
             - name: POD_NAME
               valueFrom:
