@@ -29,7 +29,7 @@ import (
 )
 
 const (
-	cdyHealthHost = "localhost"
+	cdyHealthHost = ""
 	cdyHealthPort = 12015
 	cdyHealthPath = "/healthz"
 )
