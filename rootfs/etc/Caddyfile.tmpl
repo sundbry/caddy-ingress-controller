@@ -7,8 +7,18 @@
 
 {{ range $indexServer, $server:= .Servers }}
   {{ range $indexLocation, $location := $server.Locations }}
-    {{ $server.Hostname }}:{{ $location.Port }}{{ $location.Path }} {
-      
-    }
+    {{ $host := $server.Hostname | cleanHostname }}
+    {{ if not $location.IsDefBackend }}
+      # {{ $location.Backend }}
+      {{ $host }}:{{ $location.Port }} {
+        {{ if $location.Service }}
+          {{ $spec := $location.Service.Spec }}
+
+          proxy {{ $location.Path }} http://{{ $spec | fromSpec }} {
+            without {{ $location.Path }}
+          }
+      {{ end }}
+      }
+    {{ end }}
   {{ end }}
 {{ end }}
