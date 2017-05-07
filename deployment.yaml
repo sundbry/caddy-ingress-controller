@@ -1,49 +1,35 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: default-backend
-  namespace: default
-  labels:
-    name: default-backend
-    app: caddy-ingress-controller
-spec:
-  ports:
-    - port: 80
-      targetPort: 12015
-  selector:
-    app: caddy-ingress-controller
----
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: caddy-ingress-controller
-  namespace: default
   labels:
-    app: caddy-ingress-controller
+    k8s-app: caddy-ingress-controller
+  namespace: kube-system
 spec:
   replicas: 1
-  selector:
-    matchLabels:
-      app: caddy-ingress-controller
   template:
     metadata:
       labels:
-        app: caddy-ingress-controller
+        k8s-app: caddy-ingress-controller
+      namespace: kube-system
     spec:
+      terminationGracePeriodSeconds: 60
       containers:
-        - name: server
-          image: zikes/caddy-ingress:0.0.1
-          livenessProbe:
-            httpGet:
-              path: /healthz
-              port: 12015
-              scheme: HTTP
+        - image: zikes/caddy-ingress:0.0.1
+          name: caddy-ingress-controller
+          imagePullPolicy: Always
           readinessProbe:
             httpGet:
               path: /healthz
               port: 12015
               scheme: HTTP
-          imagePullPolicy: Always
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 12015
+              scheme: HTTP
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
           ports:
           - containerPort: 80
             hostPort: 80
@@ -59,5 +45,5 @@ spec:
                 fieldRef:
                   fieldPath: metadata.namespace
           args:
-            - /caddy-ingress-controller
-            - --default-backend-service=$(POD_NAMESPACE)/default-backend
+          - /caddy-ingress-controller
+          - --default-backend-service=$(POD_NAMESPACE)/default-http-backend
