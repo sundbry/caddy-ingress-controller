@@ -12,6 +12,7 @@ import (
 
 	"git.nwaonline.com/kubernetes/caddy-ingress/pkg/config"
 
+	api "k8s.io/client-go/pkg/api/v1"
 	"k8s.io/ingress/core/pkg/ingress"
 	"k8s.io/ingress/core/pkg/watch"
 )
@@ -83,8 +84,37 @@ var (
 			return true
 		},
 		"buildLocation": buildLocation,
+		"cleanHostname": cleanHostname,
+		"fromSpec":      fromSpec,
 	}
 )
+
+func fromSpec(input interface{}) string {
+	spec, ok := input.(api.ServiceSpec)
+	if !ok {
+		return ""
+	}
+	switch spec.Type {
+	case "ClusterIP":
+		// The ClusterIP ServiceType means the service has been assigned a
+		// dedicated unique IP address within the server
+		return spec.ClusterIP
+	case "NodePort":
+		// The NodePort ServiceType means the service is given a dedicated
+		// unique port on every node in the cluster, which is provided by the
+		// spec's ClusterIP
+		return spec.ClusterIP
+	case "LoadBalancer":
+		// The LoadBalancer ServiceType creates a dedicated Load Balancer IP
+		// on supported cloud providers
+		return spec.LoadBalancerIP
+	case "ExternalName":
+		// ExternalName is the external reference that kubedns or equiv
+		// will return as a CNAME record for this service
+		return spec.ExternalName
+	}
+	return ""
+}
 
 // buildLocation produces the location string, if the ingress has redirects
 // (specified through the ingress.kubernetes.io/rewrite-target annotation)
@@ -101,4 +131,15 @@ func buildLocation(input interface{}) string {
 		}
 	}
 	return path
+}
+
+// cleanHostname will replace the "_" hostname with ""
+func cleanHostname(input interface{}) string {
+	if hostname, ok := input.(string); ok {
+		if hostname == "_" {
+			return ""
+		}
+		return hostname
+	}
+	return ""
 }
