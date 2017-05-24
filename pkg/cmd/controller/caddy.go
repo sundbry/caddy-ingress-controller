@@ -110,7 +110,12 @@ func (c *CaddyController) Start() {
 	log.Print("starting Caddy process...")
 
 	done := make(chan error, 1)
-	c.cmd = exec.Command(c.binary, "-conf", cfgPath)
+	c.cmd = exec.Command(
+		c.binary,
+		"-conf", cfgPath,
+		"-log", "stdout",
+		"-ca", "https://acme-staging.api.letsencrypt.org/directory",
+	)
 	c.start(done)
 	for {
 		err := <-done
