@@ -13,7 +13,7 @@ RUN curl --silent --show-error --fail --location \
  && chmod 0755 /usr/bin/caddy \
  && /usr/bin/caddy -version
 
-EXPOSE 80 443 2015
+EXPOSE 80 443 12015
 
 # This is where TLS certificates from acme live.
 VOLUME /root/.caddy
