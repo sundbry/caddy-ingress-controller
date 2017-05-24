@@ -246,13 +246,6 @@ func (c CaddyController) SetListers(lister ingress.StoreLister) {
 // returning nil implies the backend will be reloaded
 // if an error is returned the update should be re-queued
 func (c *CaddyController) OnUpdate(ingressCfg ingress.Configuration) ([]byte, error) {
-	var longestName int
-	for _, srv := range ingressCfg.Servers {
-		if longestName < len(srv.Hostname) {
-			longestName = len(srv.Hostname)
-		}
-	}
-
 	cfg := cdy_template.ReadConfig(c.configmap.Data)
 	cfg.Resolver = c.resolver
 
