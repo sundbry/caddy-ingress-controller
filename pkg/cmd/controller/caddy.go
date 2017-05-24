@@ -58,31 +58,7 @@ func newCaddyController() ingress.Controller {
 		binary:    cdy,
 		configmap: &api.ConfigMap{},
 		resolver:  h,
-		proxy:     &proxy{},
 	}
-
-	listener, err := net.Listen("tcp", ":443")
-	if err != nil {
-		log.Fatalf("%v", err)
-	}
-
-	// start goroutine that accepts tcp connections in port 443
-	go func() {
-		for {
-			var conn net.Conn
-			var err error
-
-			conn, err = listener.Accept()
-
-			if err != nil {
-				log.Printf("unexpected error accepting tcp connection: %v", err)
-				continue
-			}
-
-			log.Printf("remote address %s to local %s", conn.RemoteAddr(), conn.LocalAddr())
-			go c.proxy.Handle(conn)
-		}
-	}()
 
 	var onChange func()
 	onChange = func() {
@@ -127,8 +103,6 @@ type CaddyController struct {
 
 	watchClass string
 	namespace  string
-
-	proxy *proxy
 
 	cmd *exec.Cmd
 }
