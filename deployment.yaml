@@ -32,15 +32,17 @@ spec:
             httpGet:
               path: /healthz
               port: 12015
-              scheme: HTTP
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
           livenessProbe:
             httpGet:
               path: /healthz
               port: 12015
-              scheme: HTTP
-            initialDelaySeconds: 10
-            timeoutSeconds: 1
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
           ports:
+          - containerPort: 12015
+            hostPort: 12015
           - containerPort: 80
             hostPort: 80
           - containerPort: 443
