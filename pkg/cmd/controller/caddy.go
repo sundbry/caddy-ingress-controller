@@ -279,8 +279,10 @@ func (c CaddyController) Name() string {
 
 // Check performs a healthcheck
 func (c CaddyController) Check(_ *http.Request) error {
-	res, err := http.Get(fmt.Sprintf("http://%v%v", cdyHealthHost, cdyHealthPath))
+	log.Printf("Performing Caddy Controller Health Check")
+	res, err := http.Get(fmt.Sprintf("http://%v%v:%v", cdyHealthHost, cdyHealthPath, cdyHealthPort))
 	if err != nil {
+		log.Printf("error with health check: %v", err)
 		return err
 	}
 	defer res.Body.Close()
