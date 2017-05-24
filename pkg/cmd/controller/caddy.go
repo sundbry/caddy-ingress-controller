@@ -40,6 +40,7 @@ var (
 	cfgPath         = "/etc/Caddyfile"
 	binary          = "/usr/bin/caddy"
 	defIngressClass = "caddy"
+	ingressCfgJson  = []byte{}
 )
 
 func newCaddyController() ingress.Controller {
@@ -153,6 +154,19 @@ func (c CaddyController) Reload(data []byte) ([]byte, bool, error) {
 		return nil, false, err
 	}
 
+	log.Printf(`
+		-----------------------------------------------
+		Caddyfile
+		-----------------------------------------------
+		%v
+		`, string(data))
+	log.Printf(`
+		-----------------------------------------------
+		Configuration Struct
+		-----------------------------------------------
+		%v
+		`, string(ingressCfgJson))
+
 	// signal the Caddy process to reload the configuration
 	err = c.cmd.Process.Signal(syscall.SIGUSR1)
 	return []byte{}, true, err
@@ -262,20 +276,7 @@ func (c *CaddyController) OnUpdate(ingressCfg ingress.Configuration) ([]byte, er
 
 	// TODO: Validate config template results
 
-	log.Printf(`
------------------------------------------------
-Caddyfile
------------------------------------------------
-%v
-`, string(content))
-	b, _ := json.Marshal(ingressCfg)
-	log.Printf(`
------------------------------------------------
-Configuration Struct
------------------------------------------------
-%v
-
-`, string(b))
+	ingressCfgJson, _ = json.Marshal(ingressCfg)
 
 	return content, nil
 }
