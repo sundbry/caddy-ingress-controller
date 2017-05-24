@@ -99,8 +99,6 @@ type CaddyController struct {
 	binary   string
 	resolver []net.IP
 
-	cmdArgs []string
-
 	watchClass string
 	namespace  string
 
@@ -137,8 +135,6 @@ func (c *CaddyController) start(done chan error) {
 		done <- err
 		return
 	}
-
-	c.cmdArgs = c.cmd.Args
 
 	go func() {
 		done <- c.cmd.Wait()
