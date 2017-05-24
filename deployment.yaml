@@ -36,6 +36,8 @@ spec:
           - containerPort: 443
             hostPort: 443
           env:
+            - name: ACME_EMAIL
+              value: zikes@zikes.me
             - name: POD_NAME
               valueFrom:
                 fieldRef:
