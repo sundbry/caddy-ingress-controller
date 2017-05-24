@@ -121,14 +121,11 @@ func (c *CaddyController) Start() {
 		err := <-done
 		if exitError, ok := err.(*exec.ExitError); ok {
 			waitStatus := exitError.Sys().(syscall.WaitStatus)
-			log.Printf(`
+			log.Fatalf(`
 -------------------------------------------------------------------------------
 Caddy process died (%v): %v
 -------------------------------------------------------------------------------
 `, waitStatus.ExitStatus(), err)
-			c.cmd.Process.Release()
-			c.cmd = exec.Command(c.binary, "-conf", cfgPath)
-			c.start(done)
 		}
 	}
 }
