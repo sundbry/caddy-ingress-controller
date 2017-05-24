@@ -175,13 +175,7 @@ func (c CaddyController) Reload(data []byte) ([]byte, bool, error) {
 }
 
 func (c CaddyController) isReloadRequired(data []byte) bool {
-	in, err := os.Open(cfgPath)
-	if err != nil {
-		return false
-	}
-
-	src, err := ioutil.ReadAll(in)
-	in.Close()
+	src, err := ioutil.ReadFile(cfgPath)
 	if err != nil {
 		return false
 	}
