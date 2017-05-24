@@ -1,3 +1,9 @@
+kind: Secret
+apiVersion: v1
+metadata:
+  name: tls-certificates
+  namespace: kube-system
+---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -14,6 +20,10 @@ spec:
       namespace: kube-system
     spec:
       terminationGracePeriodSeconds: 60
+      volumes:
+        - name: tls-certificates-volume
+          secret:
+            secretName: tls-certificates
       containers:
         - image: zikes/caddy-ingress:0.0.1
           name: caddy-ingress-controller
@@ -35,6 +45,9 @@ spec:
             hostPort: 80
           - containerPort: 443
             hostPort: 443
+          volumeMounts:
+            - name: tls-certificates-volume
+              mountPath: /root/.caddy
           env:
             - name: ACME_EMAIL
               value: zikes@zikes.me
