@@ -1,78 +1,76 @@
 # Caddy Ingress Controller
 
-This is a Caddy ingress controller for Kubernetes.
+This is an Ingress Controller, which implements the `ingress.Controller`
+interface provided by [k8s.io/ingress/core/pkg/ingress](https://github.com/kubernetes/ingress/tree/master/core/pkg/ingress).
 
-Caddy is a simple http server written in Go. [Read more here.](https://github.com/mholt/caddy)
+The implementation is fairly incomplete, in that it does not support any of the
+ingress annotations (yet!) but Caddy's straightforward configuration process
+should make them reasonably easy to implement for someone familiar with k8s
+networking.
 
-## Using the ingress controller
+Additionally, I have only done some limited testing of Caddy's automatic HTTPS
+features which utilize LetsEncrypt to automatically fetch and implement TLS
+certificates for hosts specified by Ingresses. I have managed to get it to work
+a few times, but not reliably enough to be able to say that this controller
+provides that feature at this time.
 
-When creating an ingress, specify the annotation:
+## Deployment
+
+`go get` this repo, make sure you're signed into docker hub, then run
 
 ```
-kubernetes.io/ingress.class: "caddy"
+PREFIX={my-docker-username}/caddy-controller make push
 ```
 
-Example:
-
-```
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: caddy-test
-  annotations:
-    kubernetes.io/ingress.class: "caddy"
-spec:
-  rules:
-  - host: myhost.example.com
-    http:
-      paths:
-      - path: /
-        backend:
-          serviceName: my-service
-          servicePort: 9090
-```
+A sample deployment.yaml has been included. Just replace the image name &
+email address with your own.
 
 ## Configuration
 
-You can also add the following annotations for various settings.
+**LetsEncrypt Email Address** - Passed into the container via the `ACME_EMAIL`
+environment variable - currently set in the sample deployment.yaml.
 
-| Name | type |
-|------|------|
-| [ingress.kubernetes.io/tls](#tls) | true or false |
-| [ingress.kubernetes.io/jwt](#jwt) | true or false |
-| [ingress.kubernetes.io/jwt-redirect](#jwt) | string |
-| [ingress.kubernetes.io/jwt-allow](#jwt) | string |
-| [ingress.kubernetes.io/jwt-deny](#jwt) | string |
+**LetsEncrypt Server** - Currently set to Staging, which will provide test
+certs if successful. To change to production, comment out the `-ca` arg
+in `pkg/cmd/controller/caddy.go`. **WARNING** this controller is not yet ready
+for production use and changing this will almost certainly cause you to hit your
+LetsEncrypt rate limits, which will prevent you from getting new certs for your
+domain for a whole week!
 
-# tls
+**Caddy Plugins** - There's a comma-delimited list of plugins at
+`rootfs/Dockerfile`, just update that list before running `make push`
 
-Automatically generate a valid SSL certificate from Let's Encrypt.
+## Development Contributions
 
-*WARNING* If you're not using persistent storage, you will _probably_ run into the Let's Encrypt [rate limit](https://letsencrypt.org/docs/rate-limits/).
+Kubernetes has already taken care of the hard part - parsing out the Ingress
+definitions, organizing them, and automatically pinging the controller with
+updates when the definitions change. That means that further development of
+this controller mostly relies on understanding the [`ingress.Configuration`](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/types.go#L133)
+struct received by the controller and mapping that out into a
+Caddyfile template.
 
-```
-ingress.kubernetes.io/tls: "true"
-```
+The controller currently logs the updated config and Caddyfile template output
+to stdout for relatively easy debugging. The `-log stdout` argument is also
+being passed to the Caddy process so that its process logs will be printed
+as well.
 
-# jwt
+## Roadmap
 
-A JSON Web Token (JWT) is a secure authentication token that stores data.  Read more about jwt [here](https://jwt.io/).
+This controller was built primarily by following the nginx controller's
+example, but the differences between the two servers means that's not terribly
+ideal.
 
-*WARNING* When jwt is enabled, the private key must be deployed with the ingress controller via. setting the environment variable `JWT_SECRET` (HMAC) or `JWT_PUBLIC_KEY` (RSA).
+The current model has a controller process controlling a separate Caddy
+process, which is how the nginx controller works. One difference in
+implementation, however, is that Caddy doesn't need to restart the process
+entirely in order to load a new configuration - a live reload of the config
+is instead triggered by sending a USR1 signal to the Caddy process.
 
-Read more about the jwt plugin [here](https://github.com/BTBurke/caddy-jwt).
-
-### ingress.kubernetes.io/jwt
-
-To enable jwt, set
-
-```
-ingress.kubernetes.io/jwt: "true"
-```
-
-This will require all paths and hosts defined by the ingress to require a valid JWT.
+I think the model can be further improved by eliminating the secondary process
+altogether, embedding Caddy into the controller itself:
+https://github.com/mholt/caddy/wiki/Embedding-Caddy-in-your-Go-program
 
 ## Disclaimer
 
-This repository includes software with the following licenses:
-* [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0.txt)
+Much of the code in this controller was copied from the nginx ingress
+controller, which is noted at the top of the copied files.
