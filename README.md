@@ -70,6 +70,10 @@ I think the model can be further improved by eliminating the secondary process
 altogether, embedding Caddy into the controller itself:
 https://github.com/mholt/caddy/wiki/Embedding-Caddy-in-your-Go-program
 
+Also, certificate persistent storage needs implemented. There are some vestiges
+left from an attempt to mount a secret as a RW filesystem, but my understanding
+of k8s is lacking in that regard.
+
 ## Disclaimer
 
 Much of the code in this controller was copied from the nginx ingress
