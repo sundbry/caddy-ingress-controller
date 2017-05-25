@@ -47,7 +47,7 @@ definitions, organizing them, and automatically pinging the controller with
 updates when the definitions change. That means that further development of
 this controller mostly relies on understanding the [`ingress.Configuration`](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/types.go#L133)
 struct received by the controller and mapping that out into a
-Caddyfile template.
+[Caddyfile template.](https://github.com/wehco/caddy-ingress-controller/blob/master/rootfs/etc/Caddyfile.tmpl)
 
 The controller currently logs the updated config and Caddyfile template output
 to stdout for relatively easy debugging. The `-log stdout` argument is also
