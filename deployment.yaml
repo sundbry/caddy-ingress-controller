@@ -55,3 +55,7 @@ spec:
           args:
           - /caddy-ingress-controller
           - --default-backend-service=$(POD_NAMESPACE)/default-http-backend
+      volumes:
+        - name: tls-certificates-volume
+          persistentVolumeClaim:
+            claimName: caddy-certs-claim

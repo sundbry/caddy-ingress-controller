@@ -1,0 +1,32 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: caddy-certs
+  namespace: kube-system
+  labels:
+    name: caddy-certs
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 200Gi
+  accessModes:
+    - ReadWriteMany
+  gcePersistentDisk:
+    fsType: ext4
+    pdName: caddy-certs
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: caddy-certs-claim
+  namespace: kube-system
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 200Gi
+  storageClassName: standard
+  selector:
+    matchLabels:
+      name: caddy-certs
