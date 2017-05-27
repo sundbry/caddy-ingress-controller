@@ -1,32 +1,37 @@
+{{ $backends := .Backends }}
+
 {{/* HealthCheck  */}}
 {{ .HealthzHost }}:{{ .HealthzPort }} {
   status 200 {{ .HealthzPath }}
 }
 
-{{ range $indexServer, $server:= .Servers }}
+{{ range $indexServer, $server := .Servers }}
   {{ $host := $server.Hostname | cleanHostname }}
   {{ if ne $host "" }}
     {{ $host }} {
-      log stdout
+      log / stdout "{combined} {upstream} {rewrite_path}"
       tls {$ACME_EMAIL}
       # tls self_signed
       # tls off
 
       {{ range $indexLocation, $location := $server.Locations }}
-        {{ if not $location.IsDefBackend }}
-          {{ if $location.Service }}
-            {{ $spec := $location.Service.Spec }}
-
-            # {{ $location.Backend }}
-            proxy {{ $location.Path }} {{ $spec | fromSpec }} {
-              transparent
-              {{ if ne $location.Path "/" }}
-                without {{ $location.Path }}
-              {{ end }}
-            }
-          {{ end }}
-        {{ end }}
+        rewrite {{ $location.Path }} {
+          r .*
+          to /{{ $location.Backend }}{path}
+        }
       {{ end }}
+
+      {{ range $indexBackend, $backend := $backends }}
+        # internal /{{ $backend.Name }}
+        proxy /{{ $backend.Name }} {
+          transparent
+          without /{{ $backend.Name }}
+          {{ range $indexEndpoint, $endpoint := $backend.Endpoints }}
+            upstream {{ $endpoint.Address }}:{{ $endpoint.Port }}
+          {{ end }}
+        }
+      {{ end }}
+
     }
   {{ end }}
 {{ end }}
