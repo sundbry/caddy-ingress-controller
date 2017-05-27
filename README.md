@@ -56,6 +56,8 @@ as well.
 
 ## Roadmap
 
+### Embedded Caddy
+
 This controller was built primarily by following the nginx controller's
 example, but the differences between the two servers means that's not terribly
 ideal.
@@ -70,9 +72,48 @@ I think the model can be further improved by eliminating the secondary process
 altogether, embedding Caddy into the controller itself:
 https://github.com/mholt/caddy/wiki/Embedding-Caddy-in-your-Go-program
 
-Also, certificate persistent storage needs implemented. There are some vestiges
-left from an attempt to mount a secret as a RW filesystem, but my understanding
-of k8s is lacking in that regard.
+### Annotations
+
+As defined by https://github.com/kubernetes/ingress/tree/master/core/pkg/ingress/annotations
+
+| Supported | Name                                                                                                                                                   |
+|-----------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ✘         | [ingress.kubernetes.io/auth-type](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/auth/main.go)                         |
+| ✘         | [ingress.kubernetes.io/auth-secret](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/auth/main.go)                       |
+| ✘         | [ingress.kubernetes.io/auth-realm](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/auth/main.go)                        |
+| ✘         | [ingress.kubernetes.io/auth-url](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/authreq/main.go)                       |
+| ✘         | [ingress.kubernetes.io/auth-signin](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/authreq/main.go)                    |
+| ✘         | [ingress.kubernetes.io/auth-method](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/authreq/main.go)                    |
+| ✘         | [ingress.kubernetes.io/auth-send-body](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/authreq/main.go)                 |
+| ✘         | [ingress.kubernetes.io/auth-response-headers](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/authreq/main.go)          |
+| ✘         | [ingress.kubernetes.io/auth-tls-secret](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/authtls/main.go)                |
+| ✘         | [ingress.kubernetes.io/auth-tls-verify-depth](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/authtls/main.go)          |
+| ✘         | [ingress.kubernetes.io/enable-cors](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/cors/main.go)                       |
+| ✘         | [ingress.kubernetes.io/upstream-max-fails](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/healthcheck/main.go)         |
+| ✘         | [ingress.kubernetes.io/upstream-fail-timeout](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/healthcheck/main.go)      |
+| ✘         | [ingress.kubernetes.io/whitelist-source-range](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/ipwhitelist/main.go)     |
+| ✘         | [ingress.kubernetes.io/use-port-in-redirects](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/portinredirect/main.go)   |
+| ✘         | [ingress.kubernetes.io/proxy-body-size](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/proxy/main.go)                  |
+| ✘         | [ingress.kubernetes.io/proxy-connect-timeout](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/proxy/main.go)            |
+| ✘         | [ingress.kubernetes.io/proxy-send-timeout](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/proxy/main.go)               |
+| ✘         | [ingress.kubernetes.io/proxy-read-timeout](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/proxy/main.go)               |
+| ✘         | [ingress.kubernetes.io/proxy-buffer-size](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/proxy/main.go)                |
+| ✘         | [ingress.kubernetes.io/proxy-cookie-path](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/proxy/main.go)                |
+| ✘         | [ingress.kubernetes.io/proxy-cookie-domain](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/proxy/main.go)              |
+| ✘         | [ingress.kubernetes.io/limit-connections](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/ratelimit/main.go)            |
+| ✘         | [ingress.kubernetes.io/limit-rps](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/ratelimit/main.go)                    |
+| ✘         | [ingress.kubernetes.io/rewrite-target](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/rewrite/main.go)                 |
+| ✘         | [ingress.kubernetes.io/add-base-url](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/rewrite/main.go)                   |
+| ✘         | [ingress.kubernetes.io/ssl-redirect](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/rewrite/main.go)                   |
+| ✘         | [ingress.kubernetes.io/force-ssl-redirect](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/rewrite/main.go)             |
+| ✘         | [ingress.kubernetes.io/app-root](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/rewrite/main.go)                       |
+| ✘         | [ingress.kubernetes.io/secure-backends](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/secureupstream/main.go)         |
+| ✘         | [ingress.kubernetes.io/secure-verify-ca-secret](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/secureupstream/main.go) |
+| ✘         | [ingress.kubernetes.io/affinity](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/sessionaffinity/main.go)               |
+| ✘         | [ingress.kubernetes.io/session-cookie-name](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/sessionaffinity/main.go)    |
+| ✘         | [ingress.kubernetes.io/session-cookie-hash](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/sessionaffinity/main.go)    |
+| ✘         | [ingress.kubernetes.io/configuration-snippet](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/snippet/main.go)          |
+| ✘         | [ingress.kubernetes.io/ssl-passthrough](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/sslpassthrough/main.go)         |
 
 ## Disclaimer
 
