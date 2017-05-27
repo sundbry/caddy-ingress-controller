@@ -1,11 +1,12 @@
-apiVersion: extensions/v1beta1
-kind: Deployment
+kind: StatefulSet
+apiVersion: apps/v1beta1
 metadata:
   name: caddy-ingress-controller
   labels:
     k8s-app: caddy-ingress-controller
   namespace: kube-system
 spec:
+  serviceName: caddy-ingress
   replicas: 1
   template:
     metadata:
@@ -13,14 +14,10 @@ spec:
         k8s-app: caddy-ingress-controller
       namespace: kube-system
     spec:
-      volumes:
-        - name: tls-certificates-volume
-          gcePersistentDisk:
-            pdName: caddy-certs
-            fsType: ext4
+      terminationGracePeriodSeconds: 10
       containers:
-        - image: zikes/caddy-ingress:0.0.1
-          name: caddy-ingress-controller
+        - name: caddy-ingress-controller
+          image: zikes/caddy-ingress:0.0.1
           imagePullPolicy: Always
           readinessProbe:
             httpGet:
