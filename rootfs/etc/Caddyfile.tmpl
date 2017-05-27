@@ -9,7 +9,7 @@
   {{ $host := $server.Hostname | cleanHostname }}
   {{ if ne $host "" }}
     {{ $host }} {
-      log / stdout "{combined} {upstream} {rewrite_path}"
+      log / stdout "{combined} {upstream} {rewrite_uri}"
       tls {$ACME_EMAIL}
       # tls self_signed
       # tls off
@@ -17,12 +17,11 @@
       {{ range $indexLocation, $location := $server.Locations }}
         rewrite {{ $location.Path }} {
           r .*
-          to /{{ $location.Backend }}{path}
+          to /{{ $location.Backend }}{uri}
         }
       {{ end }}
 
       {{ range $indexBackend, $backend := $backends }}
-        # internal /{{ $backend.Name }}
         proxy /{{ $backend.Name }} {
           transparent
           without /{{ $backend.Name }}
