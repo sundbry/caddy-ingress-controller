@@ -27,6 +27,7 @@
       {{ $host }}{{ $location.Path }} {
         log / stdout "{combined} {upstream}"
         tls {$ACME_EMAIL}
+        {{ $location.ConfigurationSnippet }}
 
         proxy / {
           upstream http://localhost/{{ $location.Backend }}
