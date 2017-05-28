@@ -76,3 +76,14 @@ var (
 		"cleanHostname": cleanHostname,
 	}
 )
+
+// cleanHostname will replace the "_" hostname with ""
+func cleanHostname(input interface{}) string {
+	if hostname, ok := input.(string); ok {
+		if hostname == "_" {
+			return ""
+		}
+		return hostname
+	}
+	return ""
+}
