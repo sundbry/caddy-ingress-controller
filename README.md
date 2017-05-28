@@ -109,7 +109,7 @@ As defined by https://github.com/kubernetes/ingress/tree/master/core/pkg/ingress
 | ✘         | [ingress.kubernetes.io/app-root](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/rewrite/main.go)                       |
 | ✘         | [ingress.kubernetes.io/secure-backends](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/secureupstream/main.go)         |
 | ✘         | [ingress.kubernetes.io/secure-verify-ca-secret](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/secureupstream/main.go) |
-| ✘         | [ingress.kubernetes.io/affinity](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/sessionaffinity/main.go)               |
+| -         | [ingress.kubernetes.io/affinity](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/sessionaffinity/man.go)                |
 | ✘         | [ingress.kubernetes.io/session-cookie-name](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/sessionaffinity/main.go)    |
 | ✘         | [ingress.kubernetes.io/session-cookie-hash](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/sessionaffinity/main.go)    |
 | ✔         | [ingress.kubernetes.io/configuration-snippet](https://github.com/kubernetes/ingress/blob/master/core/pkg/ingress/annotations/snippet/main.go)          |

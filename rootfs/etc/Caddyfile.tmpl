@@ -11,6 +11,9 @@
     log / stdout "[ {{ $backend.Name }} ] {combined} {upstream}"
     tls off
     proxy / {
+      {{ if eq $backend.SessionAffinity.AffinityType "ip" }}
+        policy ip_hash
+      {{ end }}
       transparent
       without /{{ $backend.Name }}
       {{ range $indexEndpoint, $endpoint := $backend.Endpoints }}
