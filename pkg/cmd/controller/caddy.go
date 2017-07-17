@@ -22,7 +22,7 @@ import (
 	cdy_template "k8s.io/ingress/controllers/caddy/pkg/template"
 	"k8s.io/ingress/controllers/caddy/pkg/version"
 
-  api "k8s.io/api/core/v1"
+  api "k8s.io/client-go/pkg/api/v1"
 
 	"k8s.io/ingress/core/pkg/ingress"
 	"k8s.io/ingress/core/pkg/ingress/defaults"
@@ -252,7 +252,7 @@ func (c *CaddyController) OnUpdate(ingressCfg ingress.Configuration) error {
 	cfg := cdy_template.ReadConfig(c.configmap.Data)
 	cfg.Resolver = c.resolver
 
-	content, err := c.t.Write(config.TemplateConfig{
+	_, err := c.t.Write(config.TemplateConfig{
 		Backends:    ingressCfg.Backends,
 		Servers:     ingressCfg.Servers,
 		TCPBackends: ingressCfg.TCPEndpoints,
