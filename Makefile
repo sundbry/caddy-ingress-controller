@@ -16,7 +16,6 @@ ifndef COMMIT
   COMMIT := git-$(shell git rev-parse --short HEAD)
 endif
 
-#PKG=github.com/wehco/caddy-ingress-controller
 PKG=k8s.io/ingress/controllers/caddy
 
 build: clean
