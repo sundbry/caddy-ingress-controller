@@ -18,9 +18,9 @@ import (
 
 	"github.com/spf13/pflag"
 
-	"git.nwaonline.com/kubernetes/caddy-ingress/pkg/config"
-	cdy_template "git.nwaonline.com/kubernetes/caddy-ingress/pkg/template"
-	"git.nwaonline.com/kubernetes/caddy-ingress/pkg/version"
+	"github.com/wehco/caddy-ingress-controller/pkg/config"
+	cdy_template "github.com/wehco/caddy-ingress-controller/pkg/template"
+	"github.com/wehco/caddy-ingress-controller/pkg/version"
 
 	api "k8s.io/client-go/pkg/api/v1"
 

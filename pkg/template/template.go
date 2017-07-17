@@ -9,7 +9,7 @@ import (
 	"log"
 	text_template "text/template"
 
-	"git.nwaonline.com/kubernetes/caddy-ingress/pkg/config"
+	"github.com/wehco/caddy-ingress-controller/pkg/config"
 
 	"k8s.io/ingress/core/pkg/watch"
 )

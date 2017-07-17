@@ -9,7 +9,7 @@ import (
 
 	"github.com/mitchellh/mapstructure"
 
-	"git.nwaonline.com/kubernetes/caddy-ingress/pkg/config"
+	"github.com/wehco/caddy-ingress-controller/pkg/config"
 )
 
 // ReadConfig obtains the configuration defined by the user merged with the defaults.

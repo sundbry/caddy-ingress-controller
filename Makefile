@@ -16,7 +16,7 @@ ifndef COMMIT
   COMMIT := git-$(shell git rev-parse --short HEAD)
 endif
 
-PKG=git.nwaonline.com/kubernetes/caddy-ingress
+PKG=github.com/wehco/caddy-ingress-controller
 
 build: clean
 	CGO_ENABLED=0 GOOS=${GOOS} go build -a -installsuffix cgo \
