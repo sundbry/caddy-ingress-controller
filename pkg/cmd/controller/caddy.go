@@ -248,7 +248,7 @@ func (c CaddyController) SetListers(lister ingress.StoreLister) {
 // write the configuration file
 // returning nil implies the backend will be reloaded
 // if an error is returned the update should be re-queued
-func (c *CaddyController) OnUpdate(ingressCfg ingress.Configuration) ([]byte, error) {
+func (c *CaddyController) OnUpdate(ingressCfg ingress.Configuration) error {
 	cfg := cdy_template.ReadConfig(c.configmap.Data)
 	cfg.Resolver = c.resolver
 
@@ -263,14 +263,14 @@ func (c *CaddyController) OnUpdate(ingressCfg ingress.Configuration) ([]byte, er
 		Cfg:         cfg,
 	})
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	// TODO: Validate config template results
 
 	ingressCfgJson, _ = json.Marshal(ingressCfg)
 
-	return content, nil
+	return nil
 }
 
 // == HealthCheck ==
