@@ -18,9 +18,9 @@ import (
 
 	"github.com/spf13/pflag"
 
-	"github.com/wehco/caddy-ingress-controller/pkg/config"
-	cdy_template "github.com/wehco/caddy-ingress-controller/pkg/template"
-	"github.com/wehco/caddy-ingress-controller/pkg/version"
+	"k8s.io/ingress/controllers/caddy/pkg/config"
+	cdy_template "k8s.io/ingress/controllers/caddy/pkg/template"
+	"k8s.io/ingress/controllers/caddy/pkg/version"
 
   api "k8s.io/api/core/v1"
 
@@ -204,6 +204,9 @@ func (c CaddyController) Info() *ingress.BackendInfo {
 		Build:      version.COMMIT,
 		Repository: version.REPO,
 	}
+}
+
+func (c *CaddyController) ConfigureFlags(flags *pflag.FlagSet) {
 }
 
 func (c CaddyController) OverrideFlags(flags *pflag.FlagSet) {
