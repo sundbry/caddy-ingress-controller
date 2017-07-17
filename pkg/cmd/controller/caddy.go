@@ -22,7 +22,7 @@ import (
 	cdy_template "github.com/wehco/caddy-ingress-controller/pkg/template"
 	"github.com/wehco/caddy-ingress-controller/pkg/version"
 
-	api "k8s.io/client-go/pkg/api/v1"
+  api "k8s.io/api/core/v1"
 
 	"k8s.io/ingress/core/pkg/ingress"
 	"k8s.io/ingress/core/pkg/ingress/defaults"
