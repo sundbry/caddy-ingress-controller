@@ -146,14 +146,14 @@ func (c *CaddyController) start(done chan error) {
 
 // Reload checks if the running configuration file is different
 // from the specified and reload Caddy if required
-func (c CaddyController) Reload(data []byte) ([]byte, bool, error) {
+func (c CaddyController) Reload(data []byte) error {
 	if !c.isReloadRequired(data) {
-		return []byte("Reload not required"), false, nil
+		return nil
 	}
 
 	err := ioutil.WriteFile(cfgPath, data, 0644)
 	if err != nil {
-		return nil, false, err
+		return err
 	}
 
 	log.Printf(`
@@ -170,8 +170,7 @@ func (c CaddyController) Reload(data []byte) ([]byte, bool, error) {
 		`, string(ingressCfgJson))
 
 	// signal the Caddy process to reload the configuration
-	err = c.cmd.Process.Signal(syscall.SIGUSR1)
-	return []byte{}, true, err
+	return c.cmd.Process.Signal(syscall.SIGUSR1)
 }
 
 func (c CaddyController) isReloadRequired(data []byte) bool {
@@ -180,11 +179,7 @@ func (c CaddyController) isReloadRequired(data []byte) bool {
 		return false
 	}
 
-	if !bytes.Equal(src, data) {
-		return true
-	}
-
-	return false
+	return !bytes.Equal(src, data)
 }
 
 func (c CaddyController) BackendDefaults() defaults.Backend {
@@ -252,7 +247,7 @@ func (c *CaddyController) OnUpdate(ingressCfg ingress.Configuration) error {
 	cfg := cdy_template.ReadConfig(c.configmap.Data)
 	cfg.Resolver = c.resolver
 
-	_, err := c.t.Write(config.TemplateConfig{
+	content, err := c.t.Write(config.TemplateConfig{
 		Backends:    ingressCfg.Backends,
 		Servers:     ingressCfg.Servers,
 		TCPBackends: ingressCfg.TCPEndpoints,
@@ -270,7 +265,7 @@ func (c *CaddyController) OnUpdate(ingressCfg ingress.Configuration) error {
 
 	ingressCfgJson, _ = json.Marshal(ingressCfg)
 
-	return nil
+	return c.Reload(content)
 }
 
 // == HealthCheck ==
