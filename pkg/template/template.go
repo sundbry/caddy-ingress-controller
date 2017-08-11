@@ -10,8 +10,6 @@ import (
 	text_template "text/template"
 
 	"k8s.io/ingress/controllers/caddy/pkg/config"
-
-	"k8s.io/ingress/core/pkg/watch"
 )
 
 const (
@@ -23,31 +21,24 @@ const (
 // Template
 type Template struct {
 	tmpl    *text_template.Template
-	fw      watch.FileWatcher
 	s       int
 	tmplBuf *bytes.Buffer
 }
 
 // NewTemplate returns a new Template instance or an
 // error if the specified template contains errors
-func NewTemplate(file string, onChange func()) (*Template, error) {
+func NewTemplate(file string) (*Template, error) {
 	tmpl := text_template.Must(text_template.New("Caddyfile.tmpl").Funcs(funcMap).ParseFiles(file))
-	fw, err := watch.NewFileWatcher(file, onChange)
-	if err != nil {
-		return nil, err
-	}
 
 	return &Template{
 		tmpl:    tmpl,
-		fw:      fw,
 		s:       defBufferSize,
 		tmplBuf: bytes.NewBuffer(make([]byte, 0, defBufferSize)),
 	}, nil
 }
 
-// Close removes the file watcher
+// Close removes any file watcher
 func (t *Template) Close() {
-	t.fw.Close()
 }
 
 // Write populates a buffer using the template with the Caddy configuration

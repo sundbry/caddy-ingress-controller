@@ -61,24 +61,7 @@ func newCaddyController() ingress.Controller {
 		resolver:  h,
 	}
 
-	var onChange func()
-	onChange = func() {
-		template, err := cdy_template.NewTemplate(tmplPath, onChange)
-		if err != nil {
-			log.Printf(`
--------------------------------------------------------------------------------
-Error loading new template: %v
--------------------------------------------------------------------------------
-`, err)
-			return
-		}
-
-		c.t.Close()
-		c.t = template
-		log.Print("new Caddy template loaded")
-	}
-
-	cdyTpl, err := cdy_template.NewTemplate(tmplPath, onChange)
+	cdyTpl, err := cdy_template.NewTemplate(tmplPath)
 	if err != nil {
 		log.Fatalf("invalid Caddy template: %v", err)
 	}
