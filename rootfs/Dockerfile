@@ -1,17 +1,25 @@
+#
+# Builder
+#
+FROM abiosoft/caddy:builder as builder
+
+ARG version="0.10.12"
+ARG plugins="git"
+
+# process wrapper
+RUN go get -v github.com/abiosoft/parent
+
+RUN VERSION=${version} PLUGINS=${plugins} /bin/sh /usr/bin/builder.sh
+
 # Credits to https://github.com/abiosoft/caddy-docker
-FROM alpine:3.5
+FROM alpine:3.7
 MAINTAINER Kevin Minehart <kminehart@wehco.com>
 
 ARG plugins=http.jwt,http.proxyprotocol,http.realip
 
 RUN apk add --no-cache openssh-client git tar curl
 
-RUN curl --silent --show-error --fail --location \
-      --header "Accept: application/tar+gzip, application/x-gzip, application/octet-stream" -o - \
-      "https://caddyserver.com/download/linux/amd64?plugins=${plugins}" \
-    | tar --no-same-owner -C /usr/bin/ -xz caddy \
- && chmod 0755 /usr/bin/caddy \
- && /usr/bin/caddy -version
+COPY --from=builder /install/caddy /usr/bin/caddy
 
 EXPOSE 80 443 12015
 
