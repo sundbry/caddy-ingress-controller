@@ -5,16 +5,14 @@
 package main
 
 import (
-	"bytes"
+	"github.com/mholt/caddy"
+	"github.com/mholt/caddy/caddytls"
+	_ "github.com/mholt/caddy/caddyhttp"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
-	"os"
-	"os/exec"
-	"syscall"
 
 	"github.com/spf13/pflag"
 
@@ -37,26 +35,16 @@ const (
 
 var (
 	tmplPath        = "/etc/Caddyfile.tmpl"
-	cfgPath         = "/etc/Caddyfile"
-	binary          = "/usr/bin/caddy"
 	defIngressClass = "caddy"
-	ingressCfgJson  = []byte{}
 )
 
 func newCaddyController() ingress.Controller {
-	cdy := os.Getenv("CADDY_BINARY")
-
-	if cdy == "" {
-		cdy = binary
-	}
-
 	h, err := dns.GetSystemNameServers()
 	if err != nil {
 		log.Printf("unexpected error reading system nameservers: %v", err)
 	}
 
 	c := &CaddyController{
-		binary:    cdy,
 		configmap: &api.ConfigMap{},
 		resolver:  h,
 	}
@@ -84,6 +72,7 @@ Error loading new template: %v
 	}
 
 	c.t = cdyTpl
+	c.caddyFileContent = nil
 
 	go c.Start()
 
@@ -97,89 +86,45 @@ type CaddyController struct {
 
 	storeLister ingress.StoreLister
 
-	binary   string
 	resolver []net.IP
 
 	watchClass string
 	namespace  string
-
-	cmd *exec.Cmd
+	instance *caddy.Instance
+	caddyFileContent []byte
 }
 
 func (c *CaddyController) Start() {
-	log.Print("starting Caddy process...")
+	log.Print("Starting Caddy controller...")
 
-	done := make(chan error, 1)
-	c.cmd = exec.Command(
-		c.binary,
-		"-conf", cfgPath,
-		"-log", "stdout",
-		"-ca", "https://acme-staging.api.letsencrypt.org/directory",
-	)
-	c.start(done)
-	for {
-		err := <-done
-		if exitError, ok := err.(*exec.ExitError); ok {
-			waitStatus := exitError.Sys().(syscall.WaitStatus)
-			log.Fatalf(`
--------------------------------------------------------------------------------
-Caddy process died (%v): %v
--------------------------------------------------------------------------------
-`, waitStatus.ExitStatus(), err)
-		}
-	}
-}
+	caddy.AppName = "caddy-ingress-controller"
+	caddy.AppVersion = version.RELEASE
+	caddytls.DefaultCAUrl = "https://acme-staging.api.letsencrypt.org/directory"
+	//caddytls.DefaultCAUrl = "https://acme-v01.api.letsencrypt.org/directory"
+	caddy.RegisterCaddyfileLoader("caddy-ingress-controller", c)
 
-func (c *CaddyController) start(done chan error) {
-	c.cmd.Stdout = os.Stdout
-	c.cmd.Stderr = os.Stderr
-	if err := c.cmd.Start(); err != nil {
-		log.Fatalf("caddy error: %v", err)
-		done <- err
-		return
-	}
-
-	go func() {
-		done <- c.cmd.Wait()
-	}()
-}
-
-// Reload checks if the running configuration file is different
-// from the specified and reload Caddy if required
-func (c CaddyController) Reload(data []byte) error {
-	if !c.isReloadRequired(data) {
-		return nil
-	}
-
-	err := ioutil.WriteFile(cfgPath, data, 0644)
+	caddyfile, err := caddy.LoadCaddyfile("http")
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
 
-	log.Printf(`
-		-----------------------------------------------
-		Caddyfile
-		-----------------------------------------------
-		%v
-		`, string(data))
-	log.Printf(`
-		-----------------------------------------------
-		Configuration Struct
-		-----------------------------------------------
-		%v
-		`, string(ingressCfgJson))
-
-	// signal the Caddy process to reload the configuration
-	return c.cmd.Process.Signal(syscall.SIGUSR1)
+	c.instance, err = caddy.Start(caddyfile)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
-func (c CaddyController) isReloadRequired(data []byte) bool {
-	src, err := ioutil.ReadFile(cfgPath)
-	if err != nil {
-		return false
+// https://godoc.org/github.com/mholt/caddy#Loader
+func (c *CaddyController) Load(serverType string) (caddy.Input, error) {
+	if c.caddyFileContent == nil {
+		return nil, nil
+	} else {
+		return caddy.CaddyfileInput{
+			Contents: c.caddyFileContent,
+			Filepath: "configmap",
+			ServerTypeName: serverType,
+		}, nil
 	}
-
-	return !bytes.Equal(src, data)
 }
 
 func (c CaddyController) BackendDefaults() defaults.Backend {
@@ -247,6 +192,16 @@ func (c *CaddyController) OnUpdate(ingressCfg ingress.Configuration) error {
 	cfg := cdy_template.ReadConfig(c.configmap.Data)
 	cfg.Resolver = c.resolver
 
+	var ingressCfgJson []byte
+	ingressCfgJson, _ = json.Marshal(ingressCfg)
+	log.Printf(
+`
+-----------------------------------------------
+Loading Configuration Struct
+-----------------------------------------------
+%v
+`, string(ingressCfgJson))
+
 	content, err := c.t.Write(config.TemplateConfig{
 		Backends:    ingressCfg.Backends,
 		Servers:     ingressCfg.Servers,
@@ -261,11 +216,27 @@ func (c *CaddyController) OnUpdate(ingressCfg ingress.Configuration) error {
 		return err
 	}
 
-	// TODO: Validate config template results
+	c.caddyFileContent = content
+	caddyfile, err := caddy.LoadCaddyfile("http")
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	log.Printf(
+`
+-----------------------------------------------
+Loading Caddyfile
+-----------------------------------------------
+%v
+`, string(caddyfile.Body()))
 
-	ingressCfgJson, _ = json.Marshal(ingressCfg)
+	c.instance, err = c.instance.Restart(caddyfile)
+	if err != nil {
+	log.Fatal(err)
+	return err
+	}
 
-	return c.Reload(content)
+	return nil
 }
 
 // == HealthCheck ==
