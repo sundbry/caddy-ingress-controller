@@ -23,8 +23,12 @@ build: clean
 		-ldflags "-s -w -X ${PKG}/pkg/version.RELEASE=${RELEASE} -X ${PKG}/pkg/version.COMMIT=${COMMIT} -X ${PKG}/pkg/version.REPO=${REPO_INFO}" \
 		-o rootfs/caddy-ingress-controller ${PKG}/pkg/cmd/controller
 
-container: build
-	docker build --pull -t $(PREFIX):$(RELEASE) rootfs
+container:
+	docker build --pull -t $(PREFIX):$(RELEASE) \
+		--build-arg RELEASE=$(RELEASE) \
+		--build-arg PKG=$(PKG) \
+		--build-arg COMMIT=$(COMMIT) \
+		.
 
 push: container
 	docker push $(PREFIX):$(RELEASE)

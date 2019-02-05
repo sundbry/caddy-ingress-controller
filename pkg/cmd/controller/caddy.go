@@ -6,7 +6,6 @@ package main
 
 import (
 	"github.com/mholt/caddy"
-	"github.com/mholt/caddy/caddytls"
 	_ "github.com/mholt/caddy/caddyhttp"
 	"encoding/json"
 	"fmt"
@@ -20,7 +19,8 @@ import (
 	cdy_template "k8s.io/ingress/controllers/caddy/pkg/template"
 	"k8s.io/ingress/controllers/caddy/pkg/version"
 
-	api "k8s.io/client-go/pkg/api/v1"
+	api "k8s.io/api/core/v1"
+	extensions "k8s.io/api/extensions/v1beta1"
 
 	"k8s.io/ingress/core/pkg/ingress"
 	"k8s.io/ingress/core/pkg/ingress/defaults"
@@ -99,7 +99,7 @@ func (c *CaddyController) Start() {
 
 	caddy.AppName = "caddy-ingress-controller"
 	caddy.AppVersion = version.RELEASE
-	caddytls.DefaultCAUrl = "https://acme-staging.api.letsencrypt.org/directory"
+	//caddytls.DefaultCAUrl = "https://acme-staging.api.letsencrypt.org/directory"
 	//caddytls.DefaultCAUrl = "https://acme-v01.api.letsencrypt.org/directory"
 	caddy.RegisterCaddyfileLoader("caddy-ingress-controller", c)
 
@@ -178,6 +178,10 @@ func (c CaddyController) SetConfig(cfgMap *api.ConfigMap) {
 // SetListers sets the configured store listers in the generic ingress controller
 func (c CaddyController) SetListers(lister ingress.StoreLister) {
 	c.storeLister = lister
+}
+
+func (c *CaddyController) UpdateIngressStatus(*extensions.Ingress) []api.LoadBalancerIngress {
+	return nil
 }
 
 // OnUpdate is called by syncQueue in  https://github.com/aledbf/ingress-controller/blob/master/pkg/ingress/controller/controller.go#L82
