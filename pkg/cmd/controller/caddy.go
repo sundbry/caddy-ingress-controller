@@ -99,8 +99,7 @@ func (c *CaddyController) Start() {
 
 	caddy.AppName = "caddy-ingress-controller"
 	caddy.AppVersion = version.RELEASE
-	//caddytls.DefaultCAUrl = "https://acme-staging.api.letsencrypt.org/directory"
-	//caddytls.DefaultCAUrl = "https://acme-v01.api.letsencrypt.org/directory"
+	caddy.SetCAAgreement(true)
 	caddy.RegisterCaddyfileLoader("caddy-ingress-controller", c)
 
 	caddyfile, err := caddy.LoadCaddyfile("http")

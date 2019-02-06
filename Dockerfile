@@ -11,6 +11,7 @@ COPY . /usr/src/caddy-ingress-controller
 
 RUN mkdir -p ${GOPATH}/src/k8s.io
 RUN git clone https://github.com/arctype-co/ingress.git ${GOPATH}/src/k8s.io/ingress
+RUN git clone https://github.com/arctype-co/caddy.git ${GOPATH}/src/github.com/mholt/caddy
 RUN mv /usr/src/caddy-ingress-controller ${GOPATH}/src/${PKG}
 WORKDIR $GOPATH/src/${PKG}
 RUN go get -v ./...
